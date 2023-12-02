@@ -1,8 +1,8 @@
 import express from 'express'
 
-import { register } from '../controller/auth'
-import router from 'router'
+import { login, register } from '../controller/auth'
 
 export default (router: express.Router) => {
   router.post('/auth/register', register)
+  router.post('/auth/login', login)
 }

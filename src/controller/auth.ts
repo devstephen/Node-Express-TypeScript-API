@@ -1,7 +1,6 @@
-import { UserModel, createUser, getUserByEmail } from '../db/user'
+import { createUser, getUserByEmail } from '../db/user'
 import express from 'express'
 import { random, authentication } from '../helpers'
-import { userAgent } from 'next/server'
 
 export const login = async (req: express.Request, res: express.Response) => {
   try {
@@ -12,10 +11,12 @@ export const login = async (req: express.Request, res: express.Response) => {
     }
 
     const user = await getUserByEmail(email).select(
-      '+authentication,salt +authentication.password'
+      '+authentication.salt +authentication.password'
     )
 
-    if (!user) return res.sendStatus(400)
+    if (!user) {
+      return res.sendStatus(400)
+    }
 
     const expectedHash = authentication(user.authentication.salt, password)
 
@@ -49,7 +50,9 @@ export const register = async (req: express.Request, res: express.Response) => {
     }
 
     const existingUser = await getUserByEmail(email)
-    if (existingUser) return res.sendStatus(400)
+    if (existingUser) {
+      return res.sendStatus(400)
+    }
 
     const salt = random()
     const user = await createUser({
